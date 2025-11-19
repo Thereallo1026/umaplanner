@@ -1,8 +1,10 @@
 {
-  "name": "umaplanner-reborn",
-  "private": true,
-  "version": "0.0.0",
+  "name": "umaplanner",
+  "private": false,
+  "version": "1.0.0",
+  "author": "Thereallo",
   "type": "module",
+  "license": "MIT",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -22,6 +24,7 @@
     "postprocessing": "^6.38.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-router-dom": "^7.9.6",
     "tailwind-merge": "^3.4.0",
     "three": "^0.181.2"
   },
@@ -32,7 +35,6 @@
     "autoprefixer": "^10.4.22",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.17",
-    "tailwindcss-animate": "^1.0.7",
     "typescript": "~5.8.2",
     "vite": "^6.2.0"
   }

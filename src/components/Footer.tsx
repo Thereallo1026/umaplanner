@@ -1,12 +1,12 @@
+import { Link } from "react-router-dom";
 import Dither from "@/components/bits/dither";
 
 export function Footer() {
 	const currentYear = new Date().getFullYear();
 
 	const footerLinks = [
-		{ label: "Terms", href: "/terms" },
-		{ label: "Privacy", href: "/privacy" },
-		{ label: "GitHub", href: "https://github.com/thereallo/umaplanner", external: true },
+		{ label: "FAQ", href: "/faq", external: false },
+		{ label: "GitHub", href: "https://github.com/thereallo1026/umaplanner", external: true },
 	];
 
 	return (
@@ -77,18 +77,28 @@ export function Footer() {
 
 				<nav aria-label="Footer Navigation">
 					<ul className="flex gap-1">
-						{footerLinks.map((link) => (
-							<li key={link.label}>
-								<a
-									href={link.href}
-									target={link.external ? "_blank" : undefined}
-									rel={link.external ? "noreferrer" : undefined}
-									className="text-xs font-medium uppercase hover:bg-white/20 py-1.5 px-3.5 rounded-md text-white/50 hover:text-white transition-colors duration-200"
-								>
-									{link.label}
-								</a>
-							</li>
-						))}
+						{footerLinks.map((link) => {
+							const linkClassName = "text-xs font-medium uppercase hover:bg-white/20 py-1.5 px-3.5 rounded-md text-white/50 hover:text-white transition-colors duration-200";
+							
+							return (
+								<li key={link.label}>
+									{link.external ? (
+										<a
+											href={link.href}
+											target="_blank"
+											rel="noreferrer"
+											className={linkClassName}
+										>
+											{link.label}
+										</a>
+									) : (
+										<Link to={link.href} className={linkClassName}>
+											{link.label}
+										</Link>
+									)}
+								</li>
+							);
+						})}
 					</ul>
 				</nav>
 			</div>

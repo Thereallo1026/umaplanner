@@ -86,7 +86,7 @@ export const BannerCard: React.FC<BannerCardProps> = ({
 			<div className="p-0">
 				<div className="grid md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-[#222]">
 					<div className="p-4 space-y-3">
-						<h3 className="text-[10px] uppercase tracking-widest text-[#666] font-semibold flex items-center gap-2">
+						<h3 className="text-[10px] uppercase tracking-widest text-[#666] font-semibold flex items-center gap-1">
 							<Icon icon="mdi:star" width={10} /> Character
 						</h3>
 						<div className="space-y-3">
@@ -108,7 +108,7 @@ export const BannerCard: React.FC<BannerCardProps> = ({
 					</div>
 
 					<div className="p-4 space-y-3">
-						<h3 className="text-[10px] uppercase tracking-widest text-[#666] font-semibold flex items-center gap-2">
+						<h3 className="text-[10px] uppercase tracking-widest text-[#666] font-semibold flex items-center gap-1">
 							<Icon icon="mdi:lightning-bolt" width={10} /> Support
 						</h3>
 						<div className="space-y-3">
