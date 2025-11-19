@@ -6,7 +6,7 @@ export function Footer() {
 	const footerLinks = [
 		{ label: "Terms", href: "/terms" },
 		{ label: "Privacy", href: "/privacy" },
-		{ label: "GitHub", href: "https://github.com", external: true },
+		{ label: "GitHub", href: "https://github.com/thereallo/umaplanner", external: true },
 	];
 
 	return (
