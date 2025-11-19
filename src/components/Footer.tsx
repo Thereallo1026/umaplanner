@@ -5,6 +5,7 @@ export function Footer() {
 	const currentYear = new Date().getFullYear();
 
 	const footerLinks = [
+		{ label: "Planner", href: "/", external: false },
 		{ label: "FAQ", href: "/faq", external: false },
 		{ label: "GitHub", href: "https://github.com/thereallo1026/umaplanner", external: true },
 	];
@@ -92,7 +93,11 @@ export function Footer() {
 											{link.label}
 										</a>
 									) : (
-										<Link to={link.href} className={linkClassName}>
+										<Link 
+											to={link.href} 
+											className={linkClassName}
+											onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+										>
 											{link.label}
 										</Link>
 									)}
