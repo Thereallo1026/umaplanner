@@ -34,11 +34,11 @@ const INITIAL_STATE: PlannerState = {
 };
 
 export default function Home() {
-	const currentYear = new Date().getFullYear();
+	const browserYear = useMemo(() => new Date().getFullYear(), []);
 
 	const [state, setState] = useState<PlannerState>(INITIAL_STATE);
 	const [searchTerm, setSearchTerm] = useState("");
-	const [selectedYear, setSelectedYear] = useState<number | "All">(currentYear);
+	const [selectedYear, setSelectedYear] = useState<number | "All">(browserYear);
 	const [showMobileSettings, setShowMobileSettings] = useState(false);
 	const [banners, setBanners] = useState<BannerData[]>([]);
 	const [loading, setLoading] = useState(true);
@@ -84,6 +84,32 @@ export default function Home() {
 		);
 		return Array.from(uniqueYears).sort((a, b) => a - b);
 	}, [banners]);
+
+	const didUserPickYearRef = useRef(false);
+
+	useEffect(() => {
+		if (!years.length) return;
+		if (didUserPickYearRef.current) return;
+
+		const minYear = years[0];
+		const maxYear = years[years.length - 1];
+
+		let nextSelectedYear: number | "All" = selectedYear;
+		if (years.includes(browserYear)) {
+			nextSelectedYear = browserYear;
+		} else if (browserYear < minYear) {
+			nextSelectedYear = minYear;
+		} else if (browserYear > maxYear) {
+			nextSelectedYear = maxYear;
+		} else {
+			const closestFutureYear = years.find((y) => y >= browserYear);
+			nextSelectedYear = closestFutureYear ?? maxYear;
+		}
+
+		if (nextSelectedYear !== selectedYear) {
+			setSelectedYear(nextSelectedYear);
+		}
+	}, [browserYear, selectedYear, years]);
 
 	const filteredBanners = banners.filter((banner) => {
 		const searchLower = searchTerm.toLowerCase();
@@ -269,7 +295,10 @@ export default function Home() {
 
 					<div className="flex flex-wrap items-center gap-2 mb-6">
 						<button
-							onClick={() => setSelectedYear("All")}
+							onClick={() => {
+								didUserPickYearRef.current = true;
+								setSelectedYear("All");
+							}}
 							className={cn(
 								"px-4 py-1.5 rounded-full text-sm transition-colors cursor-pointer",
 								selectedYear === "All"
@@ -284,7 +313,10 @@ export default function Home() {
 						{years.map((year) => (
 							<button
 								key={year}
-								onClick={() => setSelectedYear(year)}
+								onClick={() => {
+									didUserPickYearRef.current = true;
+									setSelectedYear(year);
+								}}
 								className={cn(
 									"px-3 py-1.5 rounded-full text-sm transition-colors cursor-pointer",
 									selectedYear === year
