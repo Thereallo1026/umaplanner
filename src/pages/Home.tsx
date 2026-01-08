@@ -95,8 +95,11 @@ export default function Home() {
 		const uniqueYears = new Set(
 			banners.map((b) => new Date(b.date).getFullYear()),
 		);
-		return Array.from(uniqueYears).sort((a, b) => a - b);
-	}, [banners]);
+		// Filter out years before the current year
+		return Array.from(uniqueYears)
+			.filter((year) => year >= currentYear)
+			.sort((a, b) => a - b);
+	}, [banners, currentYear]);
 
 	const filteredBanners = banners.filter((banner) => {
 		const searchLower = searchTerm.toLowerCase();
