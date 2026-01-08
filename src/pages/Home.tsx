@@ -77,6 +77,19 @@ export default function Home() {
 		fetchData();
 	}, []);
 
+	useEffect(() => {
+		if (banners.length > 0) {
+			const currentYear = new Date().getFullYear();
+			const hasCurrentYearData = banners.some(
+				(b) => new Date(b.date).getFullYear() === currentYear,
+			);
+
+			if (hasCurrentYearData) {
+				setSelectedYear(currentYear);
+			}
+		}
+	}, [banners]);
+
 	const years = useMemo(() => {
 		if (!banners.length) return [];
 		const uniqueYears = new Set(
@@ -103,13 +116,13 @@ export default function Home() {
 	const now = new Date();
 
 	const pastBanners = filteredBanners.filter((banner) => {
-		const endDate = banner.characters[0].end_date;
+		const endDate = banner.characters[0]?.end_date;
 		if (!endDate) return false;
 		return new Date(endDate) < now;
 	});
 
 	const activeAndFutureBanners = filteredBanners.filter((banner) => {
-		const endDate = banner.characters[0].end_date;
+		const endDate = banner.characters[0]?.end_date;
 		if (!endDate) return true;
 		return new Date(endDate) >= now;
 	});
