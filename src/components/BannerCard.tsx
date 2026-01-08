@@ -49,7 +49,7 @@ export const BannerCard: React.FC<BannerCardProps> = ({
 	const now = new Date();
 	const startDate = new Date(banner.date);
 
-	const endDate = banner.characters[0].end_date;
+	const endDate = banner.characters[0]?.end_date;
 	const isPast = endDate ? new Date(endDate) < now : false;
 	const isCurrent = endDate
 		? startDate <= now && new Date(endDate) >= now
@@ -67,7 +67,7 @@ export const BannerCard: React.FC<BannerCardProps> = ({
 				<div className="flex items-center gap-3 text-xs font-mono text-[#888]">
 					<Icon icon="mdi:calendar" width={12} />
 					<span className={isCurrent ? "text-white font-bold" : ""}>
-						{formatDate(banner.characters[0].start_date)}
+						{formatDate(banner.characters[0]?.start_date || banner.date)}
 					</span>
 					<Icon icon="mdi:arrow-right" width={10} className="text-[#444]" />
 					<span>{endDate ? formatDate(endDate) : "???"}</span>
