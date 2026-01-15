@@ -17,6 +17,8 @@ import { Input } from "@/components/ui/input";
 import type { BannerData, PlannerState } from "@/types";
 import { cn } from "@/lib/utils";
 
+const PLANNER_STATE_STORAGE_KEY = "umaPlanner:plannerState";
+
 const INITIAL_STATE: PlannerState = {
 	carats: 0,
 	umaTickets: 0,
@@ -33,10 +35,53 @@ const INITIAL_STATE: PlannerState = {
 	rainbowCleats: false,
 };
 
+const isNumber = (value: unknown): value is number =>
+	typeof value === "number" && Number.isFinite(value);
+
+const isBoolean = (value: unknown): value is boolean =>
+	typeof value === "boolean";
+
+const sanitizePlannerState = (
+	value: Partial<PlannerState>,
+): Partial<PlannerState> => ({
+	carats: isNumber(value.carats) ? value.carats : undefined,
+	umaTickets: isNumber(value.umaTickets) ? value.umaTickets : undefined,
+	supportTickets: isNumber(value.supportTickets)
+		? value.supportTickets
+		: undefined,
+	clubRank: isNumber(value.clubRank) ? value.clubRank : undefined,
+	classRank: isNumber(value.classRank) ? value.classRank : undefined,
+	championMeeting: isNumber(value.championMeeting)
+		? value.championMeeting
+		: undefined,
+	dailyLogin: isBoolean(value.dailyLogin) ? value.dailyLogin : undefined,
+	dailyMissions: isBoolean(value.dailyMissions) ? value.dailyMissions : undefined,
+	legendRaces: isBoolean(value.legendRaces) ? value.legendRaces : undefined,
+	dailyPass: isBoolean(value.dailyPass) ? value.dailyPass : undefined,
+	silverCleats: isBoolean(value.silverCleats) ? value.silverCleats : undefined,
+	goldCleats: isBoolean(value.goldCleats) ? value.goldCleats : undefined,
+	rainbowCleats: isBoolean(value.rainbowCleats)
+		? value.rainbowCleats
+		: undefined,
+});
+
+const getStoredPlannerState = (): PlannerState => {
+	if (typeof window === "undefined") return INITIAL_STATE;
+	const stored = window.localStorage.getItem(PLANNER_STATE_STORAGE_KEY);
+	if (!stored) return INITIAL_STATE;
+	try {
+		const parsed = JSON.parse(stored);
+		if (!parsed || typeof parsed !== "object") return INITIAL_STATE;
+		return { ...INITIAL_STATE, ...sanitizePlannerState(parsed) };
+	} catch {
+		return INITIAL_STATE;
+	}
+};
+
 export default function Home() {
 	const currentYear = new Date().getFullYear();
 
-	const [state, setState] = useState<PlannerState>(INITIAL_STATE);
+	const [state, setState] = useState<PlannerState>(() => getStoredPlannerState());
 	const [searchTerm, setSearchTerm] = useState("");
 	const [selectedYear, setSelectedYear] = useState<number | "All">(currentYear);
 	const [showMobileSettings, setShowMobileSettings] = useState(false);
@@ -49,6 +94,18 @@ export default function Home() {
 	});
 	const observerTarget = useRef<HTMLDivElement>(null);
 	const [error, setError] = useState<string | null>(null);
+
+	useEffect(() => {
+		if (typeof window === "undefined") return;
+		try {
+			window.localStorage.setItem(
+				PLANNER_STATE_STORAGE_KEY,
+				JSON.stringify(state),
+			);
+		} catch (error) {
+			console.error("Failed to save planner settings", error);
+		}
+	}, [state]);
 
 	useEffect(() => {
 		const fetchData = async () => {
