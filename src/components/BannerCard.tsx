@@ -2,8 +2,8 @@ import { Icon } from "@iconify/react";
 import React from "react";
 
 import type { BannerData, PlannerState } from "@/types";
-import { calculateProjection, formatDate, parseBannerName } from "@/utils";
 import type { ParsedEntity, StatType } from "@/utils";
+import { calculateProjection, formatDate, parseBannerName } from "@/utils";
 
 const STAT_COLORS: Record<StatType, string> = {
   friend: "bg-[#f5c542]/15 ring-[#f5c542]/40 text-[#f5c542]",
@@ -149,7 +149,7 @@ export const BannerCard: React.FC<BannerCardProps> = ({
     <div
       className={`group relative bg-black border rounded-lg transition-all duration-200 overflow-hidden ${
         isCurrent
-          ? "border-white shadow-[0_0_30px_-10px_rgba(255,255,255,0.2)]"
+          ? "border-transparent ring-1 ring-inset ring-white shadow-[0_0_30px_-10px_rgba(255,255,255,0.2)]"
           : "border-[#333] hover:border-[#666]"
       } ${isPast ? "opacity-40 grayscale" : ""}`}
     >
