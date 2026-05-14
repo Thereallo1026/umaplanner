@@ -78,3 +78,68 @@ export const formatDate = (dateString: string) => {
     year: "numeric",
   }).format(date);
 };
+
+export type StatType =
+  | "speed"
+  | "stamina"
+  | "power"
+  | "guts"
+  | "wit"
+  | "friend";
+export type TagKind = "stat" | "variant" | "collab";
+
+export interface ParsedEntity {
+  name: string;
+  tag: string | null;
+  tagKind: TagKind | null;
+  stat: StatType | null;
+}
+
+export interface ParsedBannerName {
+  entities: ParsedEntity[];
+  isLaunch: boolean;
+  isRerun: boolean;
+}
+
+const STAT_ALIASES: Record<string, StatType> = {
+  friend: "friend",
+  guts: "guts",
+  intelligence: "wit",
+  power: "power",
+  speed: "speed",
+  stamina: "stamina",
+  wit: "wit",
+};
+
+const PAREN_RE = /^(.+?)\s*\(([^)]+)\)\s*$/u;
+const RERUN_RE = /^\s*\[\s*re-?run\s*\]\s*/iu;
+
+const classifyTag = (
+  tag: string
+): { tagKind: TagKind; stat: StatType | null } => {
+  const lower = tag.toLowerCase();
+  const stat = STAT_ALIASES[lower];
+  if (stat) {
+    return { stat, tagKind: "stat" };
+  }
+  if (lower.includes("collab")) {
+    return { stat: null, tagKind: "collab" };
+  }
+  return { stat: null, tagKind: "variant" };
+};
+
+export const parseBannerName = (name: string): ParsedBannerName => {
+  const isRerun = RERUN_RE.test(name);
+  const stripped = name.replace(RERUN_RE, "");
+  const isLaunch = /launch banner/iu.test(stripped);
+  const entities = stripped.split(/\s*&\s*/u).map((part): ParsedEntity => {
+    const match = part.match(PAREN_RE);
+    if (!match) {
+      return { name: part.trim(), stat: null, tag: null, tagKind: null };
+    }
+    const [, base, tag] = match;
+    const { tagKind, stat } = classifyTag(tag);
+    return { name: base.trim(), stat, tag, tagKind };
+  });
+  return { entities, isLaunch, isRerun };
+};

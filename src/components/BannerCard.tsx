@@ -2,7 +2,92 @@ import { Icon } from "@iconify/react";
 import React from "react";
 
 import type { BannerData, PlannerState } from "@/types";
-import { calculateProjection, formatDate } from "@/utils";
+import { calculateProjection, formatDate, parseBannerName } from "@/utils";
+import type { ParsedEntity, StatType } from "@/utils";
+
+const STAT_COLORS: Record<StatType, string> = {
+  friend: "bg-[#f5c542]/15 ring-[#f5c542]/40 text-[#f5c542]",
+  guts: "bg-[#ef8ec0]/15 ring-[#ef8ec0]/40 text-[#ef8ec0]",
+  power: "bg-[#f49f3f]/15 ring-[#f49f3f]/40 text-[#f49f3f]",
+  speed: "bg-[#48b1ea]/15 ring-[#48b1ea]/40 text-[#48b1ea]",
+  stamina: "bg-[#e9686f]/15 ring-[#e9686f]/40 text-[#e9686f]",
+  wit: "bg-[#5fbe96]/15 ring-[#5fbe96]/40 text-[#5fbe96]",
+};
+
+const StatBadge = ({ stat }: { stat: StatType }) => {
+  const label = stat[0].toUpperCase() + stat.slice(1);
+  return (
+    <span
+      className={`inline-flex items-center gap-1 pl-0.5 pr-1.5 py-0.5 rounded-full ring-1 ${STAT_COLORS[stat]}`}
+    >
+      <img
+        src={`/images/stats/${stat}.png`}
+        alt=""
+        className="w-3.5 h-3.5 rounded-full object-cover"
+        loading="lazy"
+      />
+      <span className="text-[9px] font-semibold uppercase tracking-wider">
+        {label}
+      </span>
+    </span>
+  );
+};
+
+const isGroupTag = (tag: string) => tag.toLowerCase() === "group";
+
+const GroupBadge = () => (
+  <span className="inline-flex items-center gap-1 pl-0.5 pr-1.5 py-0.5 rounded-full ring-1 bg-[#4FD108]/15 ring-[#4FD108]/40 text-[#4FD108]">
+    <img
+      src="/images/stats/group.png"
+      alt=""
+      className="w-3.5 h-3.5 rounded-full object-cover"
+      loading="lazy"
+    />
+    <span className="text-[9px] font-semibold uppercase tracking-wider">
+      Group
+    </span>
+  </span>
+);
+
+const EntityLabel = ({ entity }: { entity: ParsedEntity }) => (
+  <span className="inline-flex items-center gap-1.5">
+    <span className="text-white/90">{entity.name}</span>
+    {entity.stat && <StatBadge stat={entity.stat} />}
+    {entity.tag && entity.tagKind !== "stat" && isGroupTag(entity.tag) && (
+      <GroupBadge />
+    )}
+    {entity.tag && entity.tagKind !== "stat" && !isGroupTag(entity.tag) && (
+      <span
+        className={`text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded-sm ${
+          entity.tagKind === "collab"
+            ? "bg-fuchsia-500/15 text-fuchsia-300 ring-1 ring-fuchsia-500/30"
+            : "bg-white/5 text-[#888] ring-1 ring-white/10"
+        }`}
+      >
+        {entity.tag}
+      </span>
+    )}
+  </span>
+);
+
+const ParsedName = ({ name }: { name: string }) => {
+  const { entities, isRerun } = parseBannerName(name);
+  return (
+    <p className="text-xs font-medium leading-tight flex flex-wrap items-center gap-x-1.5 gap-y-1">
+      {isRerun && (
+        <span className="text-[9px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-amber-500/15 text-amber-300 ring-1 ring-amber-500/30">
+          Rerun
+        </span>
+      )}
+      {entities.map((entity, i) => (
+        <React.Fragment key={`${entity.name}-${i}`}>
+          {i > 0 && <span className="text-[#444]">+</span>}
+          <EntityLabel entity={entity} />
+        </React.Fragment>
+      ))}
+    </p>
+  );
+};
 
 interface BannerCardProps {
   banner: BannerData;
@@ -107,9 +192,7 @@ export const BannerCard: React.FC<BannerCardProps> = ({
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  <p className="text-xs font-medium text-white/90 leading-tight">
-                    {char.name}
-                  </p>
+                  <ParsedName name={char.name} />
                 </div>
               ))}
             </div>
@@ -129,9 +212,7 @@ export const BannerCard: React.FC<BannerCardProps> = ({
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  <p className="text-xs font-medium text-white/90 leading-tight">
-                    {supp.name}
-                  </p>
+                  <ParsedName name={supp.name} />
                 </div>
               ))}
             </div>
