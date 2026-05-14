@@ -149,7 +149,7 @@ export const BannerCard: React.FC<BannerCardProps> = ({
     <div
       className={`group relative bg-black border rounded-lg transition-all duration-200 overflow-hidden ${
         isCurrent
-          ? "border-transparent ring-1 ring-inset ring-white shadow-[0_0_30px_-10px_rgba(255,255,255,0.2)]"
+          ? "border-white shadow-[0_0_30px_-10px_rgba(255,255,255,0.2)]"
           : "border-[#333] hover:border-[#666]"
       } ${isPast ? "opacity-40 grayscale" : ""}`}
     >
