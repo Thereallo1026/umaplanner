@@ -1,15 +1,17 @@
 {
   "name": "umaplanner",
-  "private": false,
   "version": "1.0.0",
+  "private": false,
+  "license": "MIT",
   "author": "Thereallo",
   "type": "module",
-  "license": "MIT",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "deploy": "bun run build && wrangler pages deploy dist"
+    "deploy": "bun run build && wrangler pages deploy dist",
+    "check": "ultracite check",
+    "fix": "ultracite fix"
   },
   "dependencies": {
     "@iconify/react": "^6.0.2",
@@ -21,7 +23,7 @@
     "clsx": "^2.1.1",
     "lucide-react": "^1.14.0",
     "motion": "^12.38.0",
-    "postprocessing": "^6.39.1",
+    "postprocessing": "6.38.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "react-router-dom": "^7.15.0",
@@ -31,11 +33,14 @@
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.0",
     "@types/node": "^22.19.19",
-    "@vitejs/plugin-react": "^5.0.0",
+    "@vitejs/plugin-react": "^6.0.1",
     "autoprefixer": "^10.5.0",
+    "oxfmt": "^0.49.0",
+    "oxlint": "^1.64.0",
     "postcss": "^8.5.14",
     "tailwindcss": "^4.3.0",
     "typescript": "~5.8.2",
-    "vite": "^6.2.0"
+    "ultracite": "^7.7.0",
+    "vite": "^8.0.12"
   }
 }
