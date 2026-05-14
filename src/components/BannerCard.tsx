@@ -50,10 +50,14 @@ export const BannerCard: React.FC<BannerCardProps> = ({
   const now = new Date();
   const startDate = new Date(banner.date);
 
-  const endDate = banner.characters[0]?.end_date;
-  const isPast = endDate ? new Date(endDate) < now : false;
-  const isCurrent = endDate
-    ? startDate <= now && new Date(endDate) >= now
+  const [firstChar] = banner.characters;
+  const endDate = firstChar?.end_date;
+  const estEndDate = firstChar?.est_end_date;
+  const effectiveEndDate = endDate ?? estEndDate;
+  const isEstimatedEnd = !endDate && Boolean(estEndDate);
+  const isPast = effectiveEndDate ? new Date(effectiveEndDate) < now : false;
+  const isCurrent = effectiveEndDate
+    ? startDate <= now && new Date(effectiveEndDate) >= now
     : startDate <= now;
 
   return (
@@ -71,7 +75,10 @@ export const BannerCard: React.FC<BannerCardProps> = ({
             {formatDate(banner.characters[0]?.start_date || banner.date)}
           </span>
           <Icon icon="mdi:arrow-right" width={10} className="text-[#444]" />
-          <span>{endDate ? formatDate(endDate) : "???"}</span>
+          <span>
+            {effectiveEndDate ? formatDate(effectiveEndDate) : "???"}
+            {isEstimatedEnd && <span className="ml-1 text-[#555]">(est)</span>}
+          </span>
         </div>
         {isCurrent && (
           <div className="flex items-center gap-1.5 px-2 py-1 rounded-sm bg-white text-black text-[10px] font-bold uppercase tracking-wide">

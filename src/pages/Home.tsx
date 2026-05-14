@@ -192,7 +192,8 @@ export default function Home() {
   const now = new Date();
 
   const pastBanners = filteredBanners.filter((banner) => {
-    const endDate = banner.characters[0]?.end_date;
+    const [firstChar] = banner.characters;
+    const endDate = firstChar?.end_date ?? firstChar?.est_end_date;
     if (!endDate) {
       return false;
     }
@@ -200,7 +201,8 @@ export default function Home() {
   });
 
   const activeAndFutureBanners = filteredBanners.filter((banner) => {
-    const endDate = banner.characters[0]?.end_date;
+    const [firstChar] = banner.characters;
+    const endDate = firstChar?.end_date ?? firstChar?.est_end_date;
     if (!endDate) {
       return true;
     }
