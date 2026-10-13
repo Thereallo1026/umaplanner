@@ -136,7 +136,7 @@ export default function Home() {
     return d;
   });
   const observerTarget = useRef<HTMLDivElement>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -156,11 +156,11 @@ export default function Home() {
     const fetchData = async () => {
       try {
         setBanners(await loadBanners());
-        setError(null);
+        setLoadError(null);
       } catch (error) {
         console.error("Failed to fetch banners", error);
         setBanners([]);
-        setError("Data not reachable.");
+        setLoadError("Data not reachable.");
       } finally {
         setLoading(false);
       }
@@ -274,11 +274,11 @@ export default function Home() {
         </div>
       );
     }
-    if (error) {
+    if (loadError) {
       return (
         <div className="py-32 flex flex-col items-center justify-center text-[#444]">
           <Icon icon="mdi:alert-circle-outline" width={32} className="mb-4" />
-          <p className="text-sm">{error}</p>
+          <p className="text-sm">{loadError}</p>
         </div>
       );
     }
