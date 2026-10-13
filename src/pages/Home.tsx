@@ -268,11 +268,7 @@ export default function Home() {
     if (error) {
       return (
         <div className="py-32 flex flex-col items-center justify-center text-[#444]">
-          <Icon
-            icon="mdi:alert-circle-outline"
-            width={32}
-            className="animate-spin mb-4"
-          />
+          <Icon icon="mdi:alert-circle-outline" width={32} className="mb-4" />
           <p className="text-sm">{error}</p>
         </div>
       );
