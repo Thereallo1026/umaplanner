@@ -1,16 +1,16 @@
-export const CARATS_PER_PULL = 150;
+export const caratsPerPull = 150;
 
-export const INCOME_VALUES = {
-  DAILY_LOGIN: 30,
-  DAILY_MISSIONS: 30,
-  DAILY_PASS: 50,
-  GOLD_CLEATS: 2,
-  LEGEND_RACES: 150,
-  RAINBOW_CLEATS: 3,
-  SILVER_CLEATS: 1,
+export const incomeValues = {
+  dailyLogin: 30,
+  dailyMissions: 30,
+  dailyPass: 50,
+  goldCleats: 2,
+  legendRaces: 150,
+  rainbowCleats: 3,
+  silverCleats: 1,
 };
 
-export const CLUB_RANKS = [
+export const clubRanks = [
   { label: "SS (4500)", value: 4500 },
   { label: "S+ (3600)", value: 3600 },
   { label: "S (3150)", value: 3150 },
@@ -23,7 +23,7 @@ export const CLUB_RANKS = [
   { label: "D+ (225)", value: 225 },
 ];
 
-export const CLASS_RANKS = [
+export const classRanks = [
   { label: "Class 6 (375/wk)", value: 1500 },
   { label: "Class 5 (225/wk)", value: 900 },
   { label: "Class 4 (150/wk)", value: 600 },
@@ -32,7 +32,7 @@ export const CLASS_RANKS = [
   { label: "Class 1 (0)", value: 0 },
 ];
 
-export const CHAMPION_MEETINGS = [
+export const championMeetings = [
   { label: "Platinum Winner (2500)", value: 2500 },
   { label: "Gold Winner (1800)", value: 1800 },
   { label: "Silver Winner (1200)", value: 1200 },

@@ -2,12 +2,12 @@ import { Icon } from "@iconify/react";
 import NumberFlow from "@number-flow/react";
 import type React from "react";
 
-import { CARATS_PER_PULL } from "@/constants";
+import { caratsPerPull } from "@/constants";
 import type { PlannerState } from "@/types";
 
 export const SummaryWidget: React.FC<{ state: PlannerState }> = ({ state }) => {
   const totalPulls =
-    Math.floor(state.carats / CARATS_PER_PULL) +
+    Math.floor(state.carats / caratsPerPull) +
     state.umaTickets +
     state.supportTickets;
 

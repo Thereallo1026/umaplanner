@@ -3,10 +3,10 @@ import type React from "react";
 
 import { Input } from "@/components/ui/input";
 import {
-  CHAMPION_MEETINGS,
-  CLASS_RANKS,
-  CLUB_RANKS,
-  INCOME_VALUES,
+  championMeetings,
+  classRanks,
+  clubRanks,
+  incomeValues,
 } from "@/constants";
 import type { PlannerState } from "@/types";
 
@@ -160,7 +160,7 @@ export const PlannerForm: React.FC<PlannerFormProps> = ({
               value={state.clubRank}
               onChange={(e) => handleChange("clubRank", Number(e.target.value))}
             >
-              {CLUB_RANKS.map((opt) => (
+              {clubRanks.map((opt) => (
                 <option key={opt.label} value={opt.value}>
                   {opt.label}
                 </option>
@@ -175,7 +175,7 @@ export const PlannerForm: React.FC<PlannerFormProps> = ({
                 handleChange("classRank", Number(e.target.value))
               }
             >
-              {CLASS_RANKS.map((opt) => (
+              {classRanks.map((opt) => (
                 <option key={opt.label} value={opt.value}>
                   {opt.label}
                 </option>
@@ -190,7 +190,7 @@ export const PlannerForm: React.FC<PlannerFormProps> = ({
                 handleChange("championMeeting", Number(e.target.value))
               }
             >
-              {CHAMPION_MEETINGS.map((opt) => (
+              {championMeetings.map((opt) => (
                 <option key={opt.label} value={opt.value}>
                   {opt.label}
                 </option>
@@ -208,22 +208,22 @@ export const PlannerForm: React.FC<PlannerFormProps> = ({
 
         <div className="space-y-1">
           <CheckboxItem
-            label={`Daily Login (+${INCOME_VALUES.DAILY_LOGIN})`}
+            label={`Daily Login (+${incomeValues.dailyLogin})`}
             checked={state.dailyLogin}
             onChange={(c) => handleChange("dailyLogin", c)}
           />
           <CheckboxItem
-            label={`Daily Missions (+${INCOME_VALUES.DAILY_MISSIONS})`}
+            label={`Daily Missions (+${incomeValues.dailyMissions})`}
             checked={state.dailyMissions}
             onChange={(c) => handleChange("dailyMissions", c)}
           />
           <CheckboxItem
-            label={`Daily Pass (+${INCOME_VALUES.DAILY_PASS})`}
+            label={`Daily Pass (+${incomeValues.dailyPass})`}
             checked={state.dailyPass}
             onChange={(c) => handleChange("dailyPass", c)}
           />
           <CheckboxItem
-            label={`Legend Races (+${INCOME_VALUES.LEGEND_RACES}/mo)`}
+            label={`Legend Races (+${incomeValues.legendRaces}/mo)`}
             checked={state.legendRaces}
             onChange={(c) => handleChange("legendRaces", c)}
           />
@@ -238,17 +238,17 @@ export const PlannerForm: React.FC<PlannerFormProps> = ({
 
         <div className="space-y-1">
           <CheckboxItem
-            label={`Silver Cleats (+${INCOME_VALUES.SILVER_CLEATS} ticket)`}
+            label={`Silver Cleats (+${incomeValues.silverCleats} ticket)`}
             checked={state.silverCleats}
             onChange={(c) => handleChange("silverCleats", c)}
           />
           <CheckboxItem
-            label={`Gold Cleats (+${INCOME_VALUES.GOLD_CLEATS} tickets)`}
+            label={`Gold Cleats (+${incomeValues.goldCleats} tickets)`}
             checked={state.goldCleats}
             onChange={(c) => handleChange("goldCleats", c)}
           />
           <CheckboxItem
-            label={`Rainbow Cleats (+${INCOME_VALUES.RAINBOW_CLEATS} tickets)`}
+            label={`Rainbow Cleats (+${incomeValues.rainbowCleats} tickets)`}
             checked={state.rainbowCleats}
             onChange={(c) => handleChange("rainbowCleats", c)}
           />

@@ -1,4 +1,4 @@
-import { CARATS_PER_PULL, INCOME_VALUES } from "@/constants";
+import { caratsPerPull, incomeValues } from "@/constants";
 import type { PlannerState, ProjectionResult } from "@/types";
 
 export const calculateProjection = (
@@ -17,13 +17,13 @@ export const calculateProjection = (
 
   let dailyIncome = 0;
   if (state.dailyLogin) {
-    dailyIncome += INCOME_VALUES.DAILY_LOGIN;
+    dailyIncome += incomeValues.dailyLogin;
   }
   if (state.dailyMissions) {
-    dailyIncome += INCOME_VALUES.DAILY_MISSIONS;
+    dailyIncome += incomeValues.dailyMissions;
   }
   if (state.dailyPass) {
-    dailyIncome += INCOME_VALUES.DAILY_PASS;
+    dailyIncome += incomeValues.dailyPass;
   }
 
   let monthlyIncome = 0;
@@ -31,7 +31,7 @@ export const calculateProjection = (
   monthlyIncome += state.classRank;
   monthlyIncome += state.championMeeting;
   if (state.legendRaces) {
-    monthlyIncome += INCOME_VALUES.LEGEND_RACES;
+    monthlyIncome += incomeValues.legendRaces;
   }
 
   const totalCaratsFromDaily = dailyIncome * daysDiff;
@@ -42,20 +42,20 @@ export const calculateProjection = (
 
   let monthlyTicketIncome = 0;
   if (state.silverCleats) {
-    monthlyTicketIncome += INCOME_VALUES.SILVER_CLEATS;
+    monthlyTicketIncome += incomeValues.silverCleats;
   }
   if (state.goldCleats) {
-    monthlyTicketIncome += INCOME_VALUES.GOLD_CLEATS;
+    monthlyTicketIncome += incomeValues.goldCleats;
   }
   if (state.rainbowCleats) {
-    monthlyTicketIncome += INCOME_VALUES.RAINBOW_CLEATS;
+    monthlyTicketIncome += incomeValues.rainbowCleats;
   }
 
   const totalTicketsFromMonthly = monthlyTicketIncome * monthsDiff;
 
   const ticketPulls =
     state.umaTickets + state.supportTickets + totalTicketsFromMonthly;
-  const caratPulls = Math.floor(totalCarats / CARATS_PER_PULL);
+  const caratPulls = Math.floor(totalCarats / caratsPerPull);
 
   return {
     breakdown: {
@@ -101,7 +101,7 @@ export interface ParsedBannerName {
   isRerun: boolean;
 }
 
-const STAT_ALIASES: Record<string, StatType> = {
+const statAliases: Record<string, StatType> = {
   friend: "friend",
   guts: "guts",
   intelligence: "wit",
@@ -111,14 +111,14 @@ const STAT_ALIASES: Record<string, StatType> = {
   wit: "wit",
 };
 
-const PAREN_RE = /^(.+?)\s*\(([^)]+)\)\s*$/u;
-const RERUN_RE = /^\s*\[\s*re-?run\s*\]\s*/iu;
+const parenPattern = /^(.+?)\s*\(([^)]+)\)\s*$/u;
+const rerunPattern = /^\s*\[\s*re-?run\s*\]\s*/iu;
 
 const classifyTag = (
   tag: string
 ): { tagKind: TagKind; stat: StatType | null } => {
   const lower = tag.toLowerCase();
-  const stat = STAT_ALIASES[lower];
+  const stat = statAliases[lower];
   if (stat) {
     return { stat, tagKind: "stat" };
   }
@@ -129,11 +129,11 @@ const classifyTag = (
 };
 
 export const parseBannerName = (name: string): ParsedBannerName => {
-  const isRerun = RERUN_RE.test(name);
-  const stripped = name.replace(RERUN_RE, "");
+  const isRerun = rerunPattern.test(name);
+  const stripped = name.replace(rerunPattern, "");
   const isLaunch = /launch banner/iu.test(stripped);
   const entities = stripped.split(/\s*&\s*/u).map((part): ParsedEntity => {
-    const match = part.match(PAREN_RE);
+    const match = part.match(parenPattern);
     if (!match) {
       return { name: part.trim(), stat: null, tag: null, tagKind: null };
     }

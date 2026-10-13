@@ -19,9 +19,9 @@ import { loadBanners } from "@/lib/banners";
 import { cn } from "@/lib/utils";
 import type { BannerData, PlannerState } from "@/types";
 
-const PLANNER_STATE_STORAGE_KEY = "umaPlanner:plannerState";
+const plannerStateStorageKey = "umaPlanner:plannerState";
 
-const INITIAL_STATE: PlannerState = {
+const initialState: PlannerState = {
   carats: 0,
   championMeeting: 2500,
   classRank: 1500,
@@ -71,20 +71,20 @@ const sanitizePlannerState = (
 
 const getStoredPlannerState = (): PlannerState => {
   if (typeof window === "undefined") {
-    return INITIAL_STATE;
+    return initialState;
   }
-  const stored = window.localStorage.getItem(PLANNER_STATE_STORAGE_KEY);
+  const stored = window.localStorage.getItem(plannerStateStorageKey);
   if (!stored) {
-    return INITIAL_STATE;
+    return initialState;
   }
   try {
     const parsed = JSON.parse(stored);
     if (!parsed || typeof parsed !== "object") {
-      return INITIAL_STATE;
+      return initialState;
     }
-    return { ...INITIAL_STATE, ...sanitizePlannerState(parsed) };
+    return { ...initialState, ...sanitizePlannerState(parsed) };
   } catch {
-    return INITIAL_STATE;
+    return initialState;
   }
 };
 
@@ -113,7 +113,7 @@ export default function Home() {
     }
     try {
       window.localStorage.setItem(
-        PLANNER_STATE_STORAGE_KEY,
+        plannerStateStorageKey,
         JSON.stringify(state)
       );
     } catch (error) {

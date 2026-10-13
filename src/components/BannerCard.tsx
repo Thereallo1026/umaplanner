@@ -5,7 +5,7 @@ import type { BannerData, PlannerState } from "@/types";
 import type { ParsedEntity, StatType } from "@/utils";
 import { calculateProjection, formatDate, parseBannerName } from "@/utils";
 
-const STAT_COLORS: Record<StatType, string> = {
+const statColors: Record<StatType, string> = {
   friend: "bg-[#f5c542]/15 ring-[#f5c542]/40 text-[#f5c542]",
   guts: "bg-[#ef8ec0]/15 ring-[#ef8ec0]/40 text-[#ef8ec0]",
   power: "bg-[#f49f3f]/15 ring-[#f49f3f]/40 text-[#f49f3f]",
@@ -18,7 +18,7 @@ const StatBadge = ({ stat }: { stat: StatType }) => {
   const label = stat[0].toUpperCase() + stat.slice(1);
   return (
     <span
-      className={`inline-flex items-center gap-1 pl-0.5 pr-1.5 py-0.5 rounded-full ring-1 ${STAT_COLORS[stat]}`}
+      className={`inline-flex items-center gap-1 pl-0.5 pr-1.5 py-0.5 rounded-full ring-1 ${statColors[stat]}`}
     >
       <img
         src={`/images/stats/${stat}.png`}
