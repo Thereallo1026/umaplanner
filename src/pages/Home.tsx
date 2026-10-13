@@ -273,7 +273,7 @@ export default function Home() {
             width={32}
             className="animate-spin mb-4"
           />
-          <p className="text-sm">Error: {error}</p>
+          <p className="text-sm">{error}</p>
         </div>
       );
     }
