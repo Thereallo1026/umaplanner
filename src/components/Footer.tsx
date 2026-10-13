@@ -68,12 +68,12 @@ export const Footer = () => {
               <p className="max-w-md leading-relaxed drop-shadow-sm">
                 Data via{" "}
                 <a
-                  href="https://umaplanner.horse"
+                  href="https://uma.moe/timeline"
                   target="_blank"
                   rel="noreferrer"
                   className="text-zinc-300 hover:text-white transition-colors underline decoration-zinc-600 underline-offset-2"
                 >
-                  umaplanner.horse
+                  uma.moe
                 </a>
                 .
               </p>
