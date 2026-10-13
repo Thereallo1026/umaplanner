@@ -139,11 +139,14 @@ void mainImage(in vec4 inputColor, in vec2 uv, out vec4 outputColor) {
 class RetroEffectImpl extends Effect {
   // oxlint-disable-next-line typescript/no-explicit-any
   public uniforms: Map<string, THREE.Uniform<any>>;
-  constructor() {
+  constructor({
+    colorNum = 4,
+    pixelSize = 2,
+  }: { colorNum?: number; pixelSize?: number } = {}) {
     // oxlint-disable-next-line typescript/no-explicit-any
     const uniforms = new Map<string, THREE.Uniform<any>>([
-      ["colorNum", new THREE.Uniform(4)],
-      ["pixelSize", new THREE.Uniform(2)],
+      ["colorNum", new THREE.Uniform(colorNum)],
+      ["pixelSize", new THREE.Uniform(pixelSize)],
     ]);
     super("RetroEffect", ditherFragmentShader, { uniforms });
     this.uniforms = uniforms;
