@@ -1,6 +1,7 @@
 import { Icon } from "@iconify/react";
 import { motion, AnimatePresence } from "motion/react";
 import { useCallback, useEffect, useRef, useState, useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
 
 import { BannerCard } from "@/components/BannerCard";
 import { Footer } from "@/components/Footer";
@@ -20,6 +21,19 @@ import { cn } from "@/lib/utils";
 import type { BannerData, PlannerState } from "@/types";
 
 const plannerStateStorageKey = "umaPlanner:plannerState";
+const yearParam = "year";
+const allYearsValue = "all";
+const yearPattern = /^\d{4}$/u;
+
+const parseSelectedYear = (
+  value: string | null,
+  fallback: number
+): number | "All" => {
+  if (value?.toLowerCase() === allYearsValue) {
+    return "All";
+  }
+  return value && yearPattern.test(value) ? Number(value) : fallback;
+};
 
 const initialState: PlannerState = {
   carats: 0,
@@ -95,7 +109,24 @@ export default function Home() {
     getStoredPlannerState()
   );
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedYear, setSelectedYear] = useState<number | "All">(currentYear);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const selectedYear = parseSelectedYear(
+    searchParams.get(yearParam),
+    currentYear
+  );
+  const setSelectedYear = (year: number | "All") => {
+    setSearchParams(
+      (params) => {
+        if (year === currentYear) {
+          params.delete(yearParam);
+        } else {
+          params.set(yearParam, year === "All" ? allYearsValue : String(year));
+        }
+        return params;
+      },
+      { replace: true }
+    );
+  };
   const [showMobileSettings, setShowMobileSettings] = useState(false);
   const [banners, setBanners] = useState<BannerData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -136,18 +167,6 @@ export default function Home() {
     };
     fetchData();
   }, []);
-
-  useEffect(() => {
-    if (banners.length > 0) {
-      const hasCurrentYearData = banners.some(
-        (b) => new Date(b.date).getFullYear() === currentYear
-      );
-
-      if (hasCurrentYearData) {
-        setSelectedYear(currentYear);
-      }
-    }
-  }, [banners, currentYear]);
 
   const years = useMemo(() => {
     if (!banners.length) {
