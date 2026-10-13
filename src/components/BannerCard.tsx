@@ -1,7 +1,7 @@
 import { Icon } from "@iconify/react";
 import React from "react";
 
-import type { BannerData, PlannerState } from "@/types";
+import type { BannerData, Character, PlannerState } from "@/types";
 import type { ParsedEntity, StatType } from "@/utils";
 import { calculateProjection, formatDate, parseBannerName } from "@/utils";
 
@@ -70,15 +70,17 @@ const EntityLabel = ({ entity }: { entity: ParsedEntity }) => (
   </span>
 );
 
+const RerunBadge = () => (
+  <span className="w-fit text-[9px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-amber-500/15 text-amber-300 ring-1 ring-amber-500/30">
+    Rerun
+  </span>
+);
+
 const ParsedName = ({ name }: { name: string }) => {
   const { entities, isRerun, moreCount } = parseBannerName(name);
   return (
     <p className="text-xs font-medium leading-tight flex flex-wrap items-center gap-x-1.5 gap-y-1">
-      {isRerun && (
-        <span className="text-[9px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-amber-500/15 text-amber-300 ring-1 ring-amber-500/30">
-          Rerun
-        </span>
-      )}
+      {isRerun && <RerunBadge />}
       {entities.map((entity, i) => (
         <React.Fragment key={`${entity.name}-${i}`}>
           {i > 0 && <span className="text-[#444]">+</span>}
@@ -92,6 +94,21 @@ const ParsedName = ({ name }: { name: string }) => {
         </>
       )}
     </p>
+  );
+};
+
+const StackedName = ({ name }: { name: string }) => {
+  const { entities, isRerun, moreCount } = parseBannerName(name);
+  return (
+    <div className="flex flex-col gap-2 text-base font-medium leading-tight">
+      {isRerun && <RerunBadge />}
+      {entities.map((entity, i) => (
+        <EntityLabel key={`${entity.name}-${i}`} entity={entity} />
+      ))}
+      {moreCount > 0 && (
+        <span className="text-sm text-[#888]">+ {moreCount} more</span>
+      )}
+    </div>
   );
 };
 
@@ -125,23 +142,70 @@ const BannerImage = ({ src, alt }: { src: string; alt: string }) => {
   );
 };
 
+const SectionTitle = ({ icon, title }: { icon: string; title: string }) => (
+  <h3 className="text-[10px] uppercase tracking-widest text-[#666] font-semibold flex items-center gap-1">
+    <Icon icon={icon} width={10} /> {title}
+  </h3>
+);
+
+const BannerSection = ({
+  icon,
+  title,
+  items,
+  isWide,
+}: {
+  icon: string;
+  title: string;
+  items: Character[];
+  isWide: boolean;
+}) => (
+  <div className="p-4 space-y-3">
+    <SectionTitle icon={icon} title={title} />
+    <div className="space-y-3">
+      {items.map((item) =>
+        isWide ? (
+          <div
+            key={item.id}
+            className="grid md:grid-cols-2 gap-3 md:gap-6 md:items-center"
+          >
+            <BannerImage src={item.image_path} alt={item.name} />
+            <StackedName name={item.name} />
+          </div>
+        ) : (
+          <div key={item.id} className="space-y-2">
+            <BannerImage src={item.image_path} alt={item.name} />
+            <ParsedName name={item.name} />
+          </div>
+        )
+      )}
+    </div>
+  </div>
+);
+
+const getBannerTiming = (banner: BannerData) => {
+  const now = new Date();
+  const startDate = new Date(banner.date);
+  const [lead = banner.supports[0]] = banner.characters;
+  const endDate = lead?.end_date;
+  const effectiveEndDate = endDate ?? lead?.est_end_date;
+  const end = effectiveEndDate ? new Date(effectiveEndDate) : null;
+  return {
+    effectiveEndDate,
+    isCurrent: startDate <= now && (!end || end >= now),
+    isEstimatedEnd: !endDate && Boolean(effectiveEndDate),
+    isPast: end ? end < now : false,
+    lead,
+  };
+};
+
 export const BannerCard: React.FC<BannerCardProps> = ({
   banner,
   plannerState,
 }) => {
   const projection = calculateProjection(plannerState, banner.date);
-  const now = new Date();
-  const startDate = new Date(banner.date);
-
-  const [firstChar] = banner.characters;
-  const endDate = firstChar?.end_date;
-  const estEndDate = firstChar?.est_end_date;
-  const effectiveEndDate = endDate ?? estEndDate;
-  const isEstimatedEnd = !endDate && Boolean(estEndDate);
-  const isPast = effectiveEndDate ? new Date(effectiveEndDate) < now : false;
-  const isCurrent = effectiveEndDate
-    ? startDate <= now && new Date(effectiveEndDate) >= now
-    : startDate <= now;
+  const hasBoth = banner.characters.length > 0 && banner.supports.length > 0;
+  const { lead, effectiveEndDate, isEstimatedEnd, isPast, isCurrent } =
+    getBannerTiming(banner);
 
   return (
     <div
@@ -155,7 +219,7 @@ export const BannerCard: React.FC<BannerCardProps> = ({
         <div className="flex items-center gap-3 text-xs font-mono text-[#888]">
           <Icon icon="mdi:calendar" width={12} />
           <span className={isCurrent ? "text-white font-bold" : ""}>
-            {formatDate(banner.characters[0]?.start_date || banner.date)}
+            {formatDate(lead?.start_date || banner.date)}
           </span>
           <Icon icon="mdi:arrow-right" width={10} className="text-[#444]" />
           <span>
@@ -174,36 +238,27 @@ export const BannerCard: React.FC<BannerCardProps> = ({
         )}
       </div>
 
-      <div className="p-0">
-        <div className="grid md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-[#222]">
-          <div className="p-4 space-y-3">
-            <h3 className="text-[10px] uppercase tracking-widest text-[#666] font-semibold flex items-center gap-1">
-              <Icon icon="mdi:star" width={10} /> Character
-            </h3>
-            <div className="space-y-3">
-              {banner.characters.map((char) => (
-                <div key={char.id} className="space-y-2">
-                  <BannerImage src={char.image_path} alt={char.name} />
-                  <ParsedName name={char.name} />
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="p-4 space-y-3">
-            <h3 className="text-[10px] uppercase tracking-widest text-[#666] font-semibold flex items-center gap-1">
-              <Icon icon="mdi:lightning-bolt" width={10} /> Support
-            </h3>
-            <div className="space-y-3">
-              {banner.supports.map((supp) => (
-                <div key={supp.id} className="space-y-2">
-                  <BannerImage src={supp.image_path} alt={supp.name} />
-                  <ParsedName name={supp.name} />
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+      <div
+        className={`grid divide-y md:divide-y-0 md:divide-x divide-[#222] ${
+          hasBoth ? "md:grid-cols-2" : ""
+        }`}
+      >
+        {banner.characters.length > 0 && (
+          <BannerSection
+            icon="mdi:star"
+            title="Character"
+            items={banner.characters}
+            isWide={!hasBoth}
+          />
+        )}
+        {banner.supports.length > 0 && (
+          <BannerSection
+            icon="mdi:lightning-bolt"
+            title="Support"
+            items={banner.supports}
+            isWide={!hasBoth}
+          />
+        )}
       </div>
 
       {!isPast && (

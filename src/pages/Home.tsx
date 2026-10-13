@@ -182,8 +182,8 @@ export default function Home() {
   const now = new Date();
 
   const pastBanners = filteredBanners.filter((banner) => {
-    const [firstChar] = banner.characters;
-    const endDate = firstChar?.end_date ?? firstChar?.est_end_date;
+    const [lead = banner.supports[0]] = banner.characters;
+    const endDate = lead?.end_date ?? lead?.est_end_date;
     if (!endDate) {
       return false;
     }
@@ -191,8 +191,8 @@ export default function Home() {
   });
 
   const activeAndFutureBanners = filteredBanners.filter((banner) => {
-    const [firstChar] = banner.characters;
-    const endDate = firstChar?.end_date ?? firstChar?.est_end_date;
+    const [lead = banner.supports[0]] = banner.characters;
+    const endDate = lead?.end_date ?? lead?.est_end_date;
     if (!endDate) {
       return true;
     }
