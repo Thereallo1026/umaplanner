@@ -15,6 +15,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { loadBanners } from "@/lib/banners";
 import { cn } from "@/lib/utils";
 import type { BannerData, PlannerState } from "@/types";
 
@@ -123,19 +124,8 @@ export default function Home() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          "https://www.umaplanner.horse/api/banners"
-        );
-        if (!response.ok) {
-          throw new Error(`Request failed with status ${response.status}`);
-        }
-        const json = await response.json();
-        if (json.ok && json.data) {
-          setBanners(json.data);
-          setError(null);
-        } else {
-          throw new Error("Invalid API response format");
-        }
+        setBanners(await loadBanners());
+        setError(null);
       } catch (error) {
         console.error("Failed to fetch banners", error);
         setBanners([]);

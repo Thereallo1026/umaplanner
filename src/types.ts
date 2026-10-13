@@ -18,8 +18,6 @@ export interface Character {
   end_date: string | null;
   est_end_date: string | null;
   jp_release_date: string;
-  jp_days_until_next: number;
-  global_days_until_next: number | null;
 }
 
 export interface BannerData {

@@ -67,7 +67,7 @@ const faqs: FAQItem[] = [
   },
   {
     answer:
-      "Banner data is sourced from umaplanner.horse, which maintains an up-to-date database of all Uma Musume banners and their schedules.",
+      "Banner data is sourced from uma.moe, which maintains an up-to-date timeline of confirmed and predicted Global banners based on the JP schedule.",
     question: "Where does the banner data come from?",
   },
   {
