@@ -71,7 +71,7 @@ const EntityLabel = ({ entity }: { entity: ParsedEntity }) => (
 );
 
 const ParsedName = ({ name }: { name: string }) => {
-  const { entities, isRerun } = parseBannerName(name);
+  const { entities, isRerun, moreCount } = parseBannerName(name);
   return (
     <p className="text-xs font-medium leading-tight flex flex-wrap items-center gap-x-1.5 gap-y-1">
       {isRerun && (
@@ -85,6 +85,12 @@ const ParsedName = ({ name }: { name: string }) => {
           <EntityLabel entity={entity} />
         </React.Fragment>
       ))}
+      {moreCount > 0 && (
+        <>
+          <span className="text-[#444]">+</span>
+          <span className="text-[#888]">{moreCount} more</span>
+        </>
+      )}
     </p>
   );
 };

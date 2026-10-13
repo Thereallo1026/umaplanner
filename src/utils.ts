@@ -99,6 +99,7 @@ export interface ParsedBannerName {
   entities: ParsedEntity[];
   isLaunch: boolean;
   isRerun: boolean;
+  moreCount: number;
 }
 
 const statAliases: Record<string, StatType> = {
@@ -113,6 +114,7 @@ const statAliases: Record<string, StatType> = {
 
 const parenPattern = /^(.+?)\s*\(([^)]+)\)\s*$/u;
 const rerunPattern = /^\s*\[\s*re-?run\s*\]\s*/iu;
+const moreSuffixPattern = /\s*\+\s*(\d+)\s+more\s*$/iu;
 
 const classifyTag = (
   tag: string
@@ -130,7 +132,11 @@ const classifyTag = (
 
 export const parseBannerName = (name: string): ParsedBannerName => {
   const isRerun = rerunPattern.test(name);
-  const stripped = name.replace(rerunPattern, "");
+  const moreMatch = name.match(moreSuffixPattern);
+  const moreCount = moreMatch ? Number(moreMatch[1]) : 0;
+  const stripped = name
+    .replace(rerunPattern, "")
+    .replace(moreSuffixPattern, "");
   const isLaunch = /launch banner/iu.test(stripped);
   const entities = stripped.split(/\s*&\s*/u).map((part): ParsedEntity => {
     const match = part.match(parenPattern);
@@ -141,5 +147,5 @@ export const parseBannerName = (name: string): ParsedBannerName => {
     const { tagKind, stat } = classifyTag(tag);
     return { name: base.trim(), stat, tag, tagKind };
   });
-  return { entities, isLaunch, isRerun };
+  return { entities, isLaunch, isRerun, moreCount };
 };

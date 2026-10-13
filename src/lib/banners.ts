@@ -3,13 +3,15 @@ import type { BannerData, Character } from "@/types";
 
 const resourceBase = "https://uma.moe/resources/current";
 const assetBase = "https://uma.moe";
-const cacheKey = "umaPlanner:banners:v2";
+const cacheKey = "umaPlanner:banners:v3";
 const cacheTtlMs = 6 * 60 * 60 * 1000;
 const gzipMagic = [0x1f, 0x8b] as const;
 const rerunTag = "rerun-banner";
 const maxListedNames = 3;
 const characterIdLength = 4;
 const defaultSkin = "Original";
+const maxNameWords = 4;
+const piecePattern = /\bpiece\b/iu;
 
 interface TimelineEvent {
   type: string;
@@ -22,7 +24,8 @@ interface TimelineEvent {
   is_confirmed: boolean;
   tags: string[];
   pickup_card_ids?: number[];
-  related_support_card_names?: string[];
+  related_characters?: string[];
+  related_support_cards?: string[];
 }
 
 interface BannerTimeline {
@@ -71,19 +74,32 @@ const fetchResource = async <T>(name: string): Promise<T> => {
 const capitalize = (value: string) =>
   `${value.charAt(0).toUpperCase()}${value.slice(1)}`;
 
+const isCleanName = (name: string) =>
+  !piecePattern.test(name) && name.split(" ").length <= maxNameWords;
+
 const joinNames = (names: string[], fallback: string) => {
   const unique = [...new Set(names)];
-  const isListable = unique.length > 0 && unique.length <= maxListedNames;
-  return isListable ? unique.join(" & ") : fallback;
+  if (unique.length === 0) {
+    return fallback;
+  }
+  const listed = unique.slice(0, maxListedNames).join(" & ");
+  const hidden = unique.length - maxListedNames;
+  return hidden > 0 ? `${listed} + ${hidden} more` : listed;
 };
 
-const characterName = (event: TimelineEvent, characters: CharacterNames) =>
-  joinNames(
-    (event.pickup_card_ids ?? []).map((id) => {
+const relatedNames = (names: string[] | undefined) =>
+  (names ?? []).filter(isCleanName);
+
+const characterName = (event: TimelineEvent, characters: CharacterNames) => {
+  if (!event.pickup_card_ids) {
+    return joinNames(relatedNames(event.related_characters), event.title);
+  }
+  return joinNames(
+    event.pickup_card_ids.flatMap((id) => {
       const cardId = String(id);
       const character = characters[cardId.slice(0, characterIdLength)];
       if (!character) {
-        return event.title;
+        return [];
       }
       const skin = character.skins[cardId.slice(characterIdLength)];
       return skin && skin !== defaultSkin
@@ -92,21 +108,27 @@ const characterName = (event: TimelineEvent, characters: CharacterNames) =>
     }),
     event.title
   );
+};
 
 const supportName = (
   event: TimelineEvent,
   supports: Map<string, SupportCard>
-) =>
-  joinNames(
-    (event.pickup_card_ids ?? []).map((id, index) => {
+) => {
+  const related = event.related_support_cards ?? [];
+  if (!event.pickup_card_ids) {
+    return joinNames(relatedNames(related), event.title);
+  }
+  return joinNames(
+    event.pickup_card_ids.flatMap((id, index) => {
       const card = supports.get(String(id));
       if (card) {
         return `${card.name} (${capitalize(card.type)})`;
       }
-      return event.related_support_card_names?.[index] ?? event.title;
+      return relatedNames([related[index] ?? ""]);
     }),
     event.title
   );
+};
 
 const toCharacter = (
   event: TimelineEvent,
