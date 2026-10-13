@@ -100,36 +100,28 @@ interface BannerCardProps {
   plannerState: PlannerState;
 }
 
-const getOptimizedImageUrl = (path: string) => {
-  const baseUrl = "https://www.umaplanner.horse";
-  const fullUrl = path.startsWith("http") ? path : `${baseUrl}${path}`;
-  return `https://wsrv.nl/?url=${encodeURIComponent(fullUrl)}&output=webp`;
-};
+const getOptimizedImageUrl = (url: string) =>
+  `https://wsrv.nl/?url=${encodeURIComponent(url)}&output=webp`;
 
-const ImageWithFallback = ({
-  src,
-  alt,
-  className,
-}: {
-  src: string;
-  alt: string;
-  className?: string;
-}) => {
+const BannerImage = ({ src, alt }: { src: string; alt: string }) => {
   const [error, setError] = React.useState(false);
-  const optimizedSrc = getOptimizedImageUrl(src);
+
+  if (error) {
+    return (
+      <div className="w-full aspect-512/200 rounded-sm border border-dashed border-white/20 bg-white/5" />
+    );
+  }
 
   return (
-    <img
-      src={
-        error
-          ? `https://picsum.photos/seed/${alt.replaceAll(" ", "")}/512/189`
-          : optimizedSrc
-      }
-      alt={alt}
-      className={className}
-      onError={() => setError(true)}
-      loading="lazy"
-    />
+    <div className="w-full bg-[#111] rounded-sm overflow-hidden border border-[#222] group-hover/image:border-[#444] transition-colors">
+      <img
+        src={getOptimizedImageUrl(src)}
+        alt={alt}
+        className="block w-full h-auto"
+        onError={() => setError(true)}
+        loading="lazy"
+      />
+    </div>
   );
 };
 
@@ -191,13 +183,7 @@ export const BannerCard: React.FC<BannerCardProps> = ({
             <div className="space-y-3">
               {banner.characters.map((char) => (
                 <div key={char.id} className="space-y-2">
-                  <div className="w-full aspect-512/189 bg-[#111] rounded-sm overflow-hidden border border-[#222] group-hover/image:border-[#444] transition-colors">
-                    <ImageWithFallback
-                      src={char.image_path}
-                      alt={char.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
+                  <BannerImage src={char.image_path} alt={char.name} />
                   <ParsedName name={char.name} />
                 </div>
               ))}
@@ -211,13 +197,7 @@ export const BannerCard: React.FC<BannerCardProps> = ({
             <div className="space-y-3">
               {banner.supports.map((supp) => (
                 <div key={supp.id} className="space-y-2">
-                  <div className="w-full aspect-512/189 bg-[#111] rounded-sm overflow-hidden border border-[#222] group-hover/image:border-[#444] transition-colors">
-                    <ImageWithFallback
-                      src={supp.image_path}
-                      alt={supp.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
+                  <BannerImage src={supp.image_path} alt={supp.name} />
                   <ParsedName name={supp.name} />
                 </div>
               ))}
